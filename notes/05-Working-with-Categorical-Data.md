@@ -1,0 +1,399 @@
+# Working with Categorical Data
+
+## Introduction
+
+Machine Learning models cannot train directly on categorical values such as text or labels. Categorical data must first be converted into numerical representations before it can be used for training.
+
+This module covers categorical data, encoding techniques, common challenges, and feature crosses.
+
+---
+
+# Categorical Data
+
+Categorical data consists of values that belong to a predefined set of categories rather than representing measurable quantities.
+
+## Examples
+
+- Animal species
+- Street names
+- Email (Spam / Not Spam)
+- House colours
+- Postal codes
+- Star ratings (1–5)
+- Binned numerical values
+
+> **Important:** Not every number represents numerical data.
+
+For example:
+
+```text
+Postal Code = 20004
+```
+
+Although it contains numbers, a postal code is simply an identifier and should be treated as **categorical data**, not numerical data.
+
+---
+
+# Numerical vs Categorical Data
+
+| Numerical Data | Categorical Data |
+|----------------|------------------|
+| Represents measurable quantities | Represents categories or labels |
+| Mathematical operations are meaningful | Mathematical operations are meaningless |
+| Example: Age, Height, Salary | Example: Eye Colour, Country, Postal Code |
+
+---
+
+# Encoding
+
+Machine Learning models only understand numerical values.
+
+**Encoding** is the process of converting categorical values into numerical vectors that a model can learn from.
+
+Without encoding, values such as:
+
+```text
+Dog
+Cat
+Blue
+```
+
+cannot be used for training.
+
+---
+
+# Vocabulary Encoding
+
+A **vocabulary** is the complete list of possible values for a categorical feature.
+
+Example
+
+```text
+Car Colour
+
+Red
+Blue
+Black
+White
+Green
+```
+
+Each category is assigned a unique index.
+
+| Category | Index |
+|----------|------:|
+| Red | 0 |
+| Blue | 1 |
+| Black | 2 |
+| White | 3 |
+| Green | 4 |
+
+These indices are **not** used directly for training because they incorrectly imply numerical relationships.
+
+---
+
+# One-Hot Encoding
+
+One-Hot Encoding converts each category into a binary vector.
+
+If there are **N categories**, each vector contains **N elements**.
+
+Exactly one element equals **1** while all others equal **0**.
+
+Example
+
+| Colour | One-Hot Vector |
+|---------|----------------|
+| Red | [1,0,0,0,0] |
+| Blue | [0,1,0,0,0] |
+| Black | [0,0,1,0,0] |
+| White | [0,0,0,1,0] |
+| Green | [0,0,0,0,1] |
+
+The one-hot vector—not the original text or index—is used for model training.
+
+---
+
+# Sparse Representation
+
+One-hot vectors often contain mostly zeros.
+
+Instead of storing the entire vector, sparse representation stores only the position of the value **1**.
+
+Example
+
+One-Hot Vector
+
+```text
+[0,0,1,0,0,0]
+```
+
+Sparse Representation
+
+```text
+2
+```
+
+This significantly reduces memory usage.
+
+---
+
+# Out-of-Vocabulary (OOV)
+
+Real-world datasets often contain rare or previously unseen categories.
+
+Instead of creating a new category for every uncommon value, these values are grouped into an **Out-of-Vocabulary (OOV)** bucket.
+
+Example
+
+```text
+Common Colours
+
+Red
+Blue
+Black
+White
+
+Rare Colours
+
+Mauve
+Avocado
+Magenta
+```
+
+↓
+
+```text
+Red
+Blue
+Black
+White
+Other (OOV)
+```
+
+This reduces complexity and prevents extremely large feature vectors.
+
+---
+
+# High-Dimensional Categorical Features
+
+Some categorical features contain thousands or even millions of possible values.
+
+Examples
+
+| Feature | Approximate Categories |
+|----------|-----------------------:|
+| English Words | ~500,000 |
+| US Postal Codes | ~42,000 |
+| German Last Names | ~850,000 |
+
+Using One-Hot Encoding for these features becomes inefficient.
+
+---
+
+# Embeddings
+
+Embeddings convert high-dimensional categorical data into smaller dense vectors.
+
+### Advantages
+
+- Faster model training
+- Lower memory usage
+- Better performance
+- Captures relationships between categories
+
+Embeddings are the preferred approach for high-dimensional categorical features.
+
+---
+
+# Feature Hashing
+
+Feature Hashing (Hashing Trick) is another method for handling high-dimensional categorical data.
+
+Instead of assigning every category its own position, categories are mapped into a fixed number of buckets using a hash function.
+
+### Best Used When
+
+- Very large number of categories
+- Unknown categories appear frequently
+
+### Advantages
+
+- Reduces memory usage
+- Fixed feature size
+- Handles unseen categories
+
+---
+
+# Human Labels vs Machine Labels
+
+## Human Labels (Gold Labels)
+
+Labels created by human annotators.
+
+### Advantages
+
+- Higher quality
+- Better accuracy
+- Preferred for training
+
+### Limitations
+
+- Human error
+- Bias
+- Different opinions
+
+---
+
+## Inter-Rater Agreement
+
+Measures how consistently different human annotators label the same data.
+
+Higher agreement indicates more reliable labels.
+
+---
+
+## Machine Labels (Silver Labels)
+
+Labels automatically generated by Machine Learning models.
+
+### Advantages
+
+- Faster
+- Scalable
+- Lower cost
+
+### Limitations
+
+- Can inherit model bias
+- May contain incorrect labels
+- Should always be validated before training
+
+---
+
+# High Dimensionality
+
+Categorical data often produces feature vectors with many dimensions.
+
+Problems include:
+
+- Increased training time
+- Higher memory consumption
+- More computational cost
+
+Solutions include:
+
+- Embeddings
+- Feature Hashing
+
+---
+
+# Feature Crosses
+
+Feature Crosses combine two or more categorical features to capture interactions between them.
+
+They help linear models learn non-linear relationships.
+
+### Formula
+
+```
+Feature Cross Size = Number of Categories in Feature A × Number of Categories in Feature B
+```
+
+### Example
+
+Apple Colour
+
+```text
+Green
+Red
+White
+Yellow
+```
+
+= 4 Categories
+
+Apple Texture
+
+```text
+Crisp
+Mushy
+```
+
+= 2 Categories
+
+Feature Cross Size
+
+```text
+4 × 2 = 8
+```
+
+Resulting Features
+
+```text
+Green_Crisp
+Green_Mushy
+Red_Crisp
+Red_Mushy
+White_Crisp
+White_Mushy
+Yellow_Crisp
+Yellow_Mushy
+```
+
+---
+
+# Feature Crosses vs Polynomial Transforms
+
+| Feature Crosses | Polynomial Transforms |
+|-----------------|-----------------------|
+| Used for categorical data | Used for numerical data |
+| Capture interactions between categories | Capture non-linear numerical relationships |
+| Create new categorical combinations | Create higher-order numerical features (e.g., x², x³) |
+
+---
+
+# Best Practices
+
+- Distinguish numerical and categorical features correctly.
+- Never use category indices directly for training.
+- Use One-Hot Encoding for low-dimensional categorical features.
+- Use Embeddings or Feature Hashing for high-dimensional features.
+- Validate human and machine-generated labels.
+- Use Feature Crosses to capture interactions between categorical features.
+- Avoid creating unnecessary high-dimensional feature vectors.
+
+---
+
+# Key Takeaways
+
+- Categorical data represents labels or categories rather than measurable values.
+- Machine Learning models require categorical data to be encoded numerically.
+- One-Hot Encoding is the standard approach for low-dimensional categorical features.
+- Sparse representation reduces memory usage for one-hot vectors.
+- Rare categories should be grouped into an Out-of-Vocabulary (OOV) bucket.
+- Embeddings are preferred for high-dimensional categorical data.
+- Feature Hashing reduces dimensionality using hash functions.
+- Human labels (Gold Labels) are generally more reliable than machine labels (Silver Labels).
+- Feature Crosses allow models to learn interactions between categorical features.
+
+---
+
+# Personal Reflection
+
+## What I Learned
+
+- Numerical values are not always numerical features; identifiers such as postal codes should be treated as categorical data.
+- Choosing the correct encoding method is essential for model performance.
+- High-dimensional categorical data requires more advanced techniques such as embeddings.
+- Feature Crosses enable linear models to learn more complex relationships between categorical features.
+
+## Real-World Applications
+
+- Recommendation Systems
+- Fraud Detection
+- Natural Language Processing
+- Customer Segmentation
+- Product Classification
+- Search Engines
+- E-commerce Personalisation
